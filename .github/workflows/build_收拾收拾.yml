@@ -1,0 +1,28 @@
+name: Build 收拾收拾.dylib
+
+on: [workflow_dispatch, push]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compile iOS arm64 dylib
+        run: |
+          SRC="收拾收拾/收拾收拾.m"
+          echo "Source file: $SRC"
+          xcrun --sdk iphoneos clang -dynamiclib -arch arm64 -fobjc-arc \
+            -Wno-deprecated-declarations \
+            -miphoneos-version-min=15.0 \
+            -framework Foundation \
+            -o "收拾收拾.dylib" "$SRC"
+
+      - name: Verify
+        run: file 收拾收拾.dylib
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: 收拾收拾.dylib
+          path: 收拾收拾.dylib
