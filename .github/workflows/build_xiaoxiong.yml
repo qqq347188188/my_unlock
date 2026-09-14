@@ -1,0 +1,28 @@
+name: Build xiaoxiong.dylib
+
+on: [workflow_dispatch, push]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compile iOS arm64 dylib
+        run: |
+          SRC="xiaoxiong/xiaoxiong.m"
+          echo "Source file: $SRC"
+          xcrun --sdk iphoneos clang -dynamiclib -arch arm64 -fobjc-arc \
+            -Wno-deprecated-declarations \
+            -miphoneos-version-min=15.0 \
+            -framework Foundation \
+            -o "xiaoxiong.dylib" "$SRC"
+
+      - name: Verify
+        run: file xiaoxiong.dylib
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: xiaoxiong.dylib
+          path: xiaoxiong.dylib
