@@ -1,0 +1,28 @@
+name: Build 1121.dylib
+
+on: [workflow_dispatch, push]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compile iOS arm64 dylib
+        run: |
+          SRC="1121/1121.m"
+          echo "Source file: $SRC"
+          xcrun --sdk iphoneos clang -dynamiclib -arch arm64 -fobjc-arc \
+            -Wno-deprecated-declarations \
+            -miphoneos-version-min=15.0 \
+            -framework Foundation \
+            -o "1121.dylib" "$SRC"
+
+      - name: Verify
+        run: file 1121.dylib
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: 1121.dylib
+          path: 1121.dylib
